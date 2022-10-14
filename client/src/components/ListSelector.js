@@ -2,6 +2,7 @@ import React, { useContext, useEffect } from 'react'
 import { useHistory } from 'react-router-dom'
 import ListCard from './ListCard.js'
 import { GlobalStoreContext } from '../store'
+import EditToolbar from './EditToolbar.js'
 /*
     This React component lists all the playlists in the UI.
     
@@ -39,9 +40,11 @@ const ListSelector = () => {
                     className="playlister-button"
                     value="+" />
                 Your Lists
+                
             </div>                {
                     listCard
                 }
+                
             </div>
         </div>)
 }
