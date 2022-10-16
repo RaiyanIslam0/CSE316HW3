@@ -204,6 +204,30 @@ export const useGlobalStore = () => {
         });
     }
 
+    store.createNewList = function (){
+        async function asyncCreatePlaylist() {
+          let response = await api.createNewList();
+          if (response.data.success) {
+            let playlistId = response.data.playlist._id; 
+            async function asyncSetCurrentList(id) {
+              let response = await api.getPlaylistById(id);
+              if (response.data.success) {
+                let playlist = response.data.playlist;
+                if (response.data.success) {
+                  storeReducer({
+                    type: GlobalStoreActionType.CREATE_NEW_LIST,
+                    payload: playlist,
+                  });
+                  store.history.push("/playlist/" + playlist._id); 
+                }
+              }
+            }
+            asyncSetCurrentList(playlistId);
+          } 
+        }
+        asyncCreatePlaylist();
+    };
+
     // THIS GIVES OUR STORE AND ITS REDUCER TO ANY COMPONENT THAT NEEDS IT
     return { store, storeReducer };
 }
