@@ -23,44 +23,51 @@ function EditToolbar() {
         history.push("/");
         store.closeCurrentList();
     }
+
+    function handleAddsong() {
+      store.addSong();
+    }
+
     let editStatus = false;
     if (store.isListNameEditActive) {
         editStatus = true;
     }
     return (
-        <span id="edit-toolbar">
-            <input
-                type="button"
-                id='add-song-button'
-                disabled={editStatus}
-                value="+"
-                className={enabledButtonClass}
-            />
-            <input
-                type="button"
-                id='undo-button'
-                disabled={editStatus}
-                value="⟲"
-                className={enabledButtonClass}
-                onClick={handleUndo}
-            />
-            <input
-                type="button"
-                id='redo-button'
-                disabled={editStatus}
-                value="⟳"
-                className={enabledButtonClass}
-                onClick={handleRedo}
-            />
-            <input
-                type="button"
-                id='close-button'
-                disabled={editStatus}
-                value="&#x2715;"
-                className={enabledButtonClass}
-                onClick={handleClose}
-            />
-        </span>);
+      <span id="edit-toolbar">
+        <input
+          type="button"
+          id="add-song-button"
+          disabled={editStatus}
+          value="+"
+          className={enabledButtonClass}
+          onClick={handleAddsong}
+        />
+        <input
+          type="button"
+          id="undo-button"
+          disabled={editStatus}
+          value="⟲"
+          className={enabledButtonClass}
+          onClick={handleUndo}
+        />
+        <input
+          type="button"
+          id="redo-button"
+          disabled={editStatus}
+          value="⟳"
+          className={enabledButtonClass}
+          onClick={handleRedo}
+        />
+        <input
+          type="button"
+          id="close-button"
+          disabled={editStatus}
+          value="&#x2715;"
+          className={enabledButtonClass}
+          onClick={handleClose}
+        />
+      </span>
+    );
 }
 
 export default EditToolbar;

@@ -28,7 +28,6 @@ function ListCard(props) {
 
     function handleDeleteList(event) {
       event.stopPropagation();
-      console.log("in delete handler with " + idNamePair);
       store.markListForDeletion(idNamePair._id);
     }
 

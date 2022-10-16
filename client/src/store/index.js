@@ -123,6 +123,16 @@ export const useGlobalStore = () => {
             });
           }
 
+          case GlobalStoreActionType.ADD_NEW_SONG: {
+            return setStore({
+              idNamePairs: store.idNamePairs,
+              currentList: payload.playlist,
+              newListCounter: store.newListCounter,
+              listNameActive: false,
+              listMarkedForDeletion: null,
+            });
+          }
+
           default:
             return store;
         }
@@ -290,6 +300,58 @@ export const useGlobalStore = () => {
         }
         asyncCreatePlaylist();
     };
+
+     store.deleteSong = (idx) => {
+       const list = store.currentList;
+       list.songs.splice(idx, 1);
+       async function asyncUpdatePlaylist(playlist) {
+         let response = await api.updatePlaylistById(playlist._id, playlist);
+         if (response.data.success) {
+           console.log(response.data.playlist);
+           storeReducer({
+             type: GlobalStoreActionType.SET_CURRENT_LIST,
+             payload: response.data.playlist,
+           });
+         }
+       }
+
+       asyncUpdatePlaylist(list);
+     };
+
+     store.addSong = function () {
+       async function asyncAddNewSong() {
+         let newName = "Untitled";
+         let newArtist = "Undefined";
+         let newId = "dQw4w9WgXcQ";
+         let id = store.currentList._id;
+
+         let newSong = {title: newName,
+         artist: newArtist,
+         youTubeId: newId,
+         };
+
+         let response = await api.getPlaylistById(id);
+         if (response.data.success) {
+           let playlist = response.data.playlist;
+           let l = playlist.songs.length;
+           playlist.songs[l] = newSong;
+           async function updateList(playlist) {
+             response = await api.updatePlaylistById(id, playlist);
+             if (response.data.success) {
+               storeReducer({
+                 type: GlobalStoreActionType.ADD_NEW_SONG,
+                 payload: {
+                   playlist: playlist,
+                 },
+               });
+             }
+           }
+           updateList(playlist);
+         }
+       }
+       asyncAddNewSong();
+     };
+
 
     // THIS GIVES OUR STORE AND ITS REDUCER TO ANY COMPONENT THAT NEEDS IT
     return { store, storeReducer };

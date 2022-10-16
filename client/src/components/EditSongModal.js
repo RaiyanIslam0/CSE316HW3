@@ -1,64 +1,56 @@
-import React, { Component } from "react";
+import { useContext, useState } from "react";
+import { useHistory } from "react-router-dom";
+import { GlobalStoreContext } from "../store";
 
-export default class EditSongModal extends Component {
-  render() {
-    const {
-      editConfirmSongCallback,
-      hideEditSongModalCallback,
-      songName,
-    } = this.props;
+function DeleteListModal() {
+  const { store } = useContext(GlobalStoreContext);
+  store.history = useHistory();
 
-    let name = "";
-    return (
-      <div class="modal" id="edit-song-modal" data-animation="slideInOutLeft">
-        <div class="modal-root" id="verify-delete-song-root">
-          <div class="modal-north">Edit Song</div>
-          <div class="modal-center">
-            <div class="modal-center-content">
-              <label class="preText">Title: </label>
-              <input
-                type="text"
-                id="titleBox"
-                class="textBox"
-                onClick={this.select}
-              />
+  function handleDeleteList(event) {
+    event.stopPropagation();
+    store.deleteMarkedList();
+  }
+
+  function closeDeleteListModal() {
+    store.closeDeleteListModal();
+  }
+
+  return (
+    <div class="modal" id="edit-song-modal" data-animation="slideInOutLeft">
+      <div class="modal-root" id="verify-edit-song-root">
+        <div class="modal-north">Edit playlist</div>
+        <div class="modal-center">
+          <div class="modal-center-content">
+             <label class="preText">Title: </label>
+              <input type="text" id="titleBox" class="textBox" onClick={this.select}/>
               <br />
               <label class="preText">Artist: </label>
-              <input
-                type="text"
-                id="artistBox"
-                class="textBox"
-                onClick={this.select}
-              />
+              <input type="text" id="artistBox" class="textBox" onClick={this.select}/>
               <br />
               <label class="preText">YouTube ID:</label>
-              <input
-                type="text"
-                id="youtubeBox"
-                class="textBox"
-                onClick={this.select}
-              />
-              <br />
-            </div>
-          </div>
-          <div class="modal-south">
-            <input
-              type="button"
-              id="delete-song-confirm-button"
-              class="modal-button"
-              onClick={editConfirmSongCallback} //this.handleConfirm}
-              value="Confirm"
-            />
-            <input
-              type="button"
-              id="delete-song-cancel-button"
-              class="modal-button"
-              onClick={hideEditSongModalCallback}
-              value="Cancel"
-            />
+              <input type="text" id="youtubeBox" class="textBox" onClick={this.select} />
+              <br/>
           </div>
         </div>
+        <div class="modal-south">
+          <input
+            type="button"
+            id="edit-song-confirm-button"
+            class="modal-button"
+            onClick={handleDeleteList}
+            value="Confirm"
+          />
+          <input
+            type="button"
+            id="edit-song-cancel-button"
+            class="modal-button"
+            onClick={closeDeleteListModal}
+            value="Cancel"
+          />
+        </div>
       </div>
-    );
-  }
+    </div>
+  );
 }
+
+export default DeleteListModal;

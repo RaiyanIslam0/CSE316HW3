@@ -4,6 +4,10 @@ import { GlobalStoreContext } from "../store";
 
 function DeleteListModal() {
   const { store } = useContext(GlobalStoreContext);
+  //let name = "";
+  //if (store.currentList) {
+  //  name = store.getPlaylistNameById(store.selectedListId);
+  //}
   store.history = useHistory();
 
   function handleDeleteList(event) {
