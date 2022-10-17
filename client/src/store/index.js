@@ -352,6 +352,39 @@ export const useGlobalStore = () => {
        asyncAddNewSong();
      };
 
+     store.moveSong = function (start, end) {
+       let list = store.currentList;
+
+       // WE NEED TO UPDATE THE STATE FOR THE APP
+       if (start < end) {
+         let temp = list.songs[start];
+         for (let i = start; i < end; i++) {
+           list.songs[i] = list.songs[i + 1];
+         }
+         list.songs[end] = temp;
+       } else if (start > end) {
+         let temp = list.songs[start];
+         for (let i = start; i > end; i--) {
+           list.songs[i] = list.songs[i - 1];
+         }
+         list.songs[end] = temp;
+       }
+       async function updateList(list) {
+         let response = await api.updatePlaylistById(list._id, list);
+         list = response.data.playlist;
+         if (response.data.success) {
+           storeReducer({
+             type: GlobalStoreActionType.DRAG_LIST,
+             payload: {
+               playlist: list,
+             },
+           });
+         }
+       }
+       updateList(list);
+     };
+
+
 
     // THIS GIVES OUR STORE AND ITS REDUCER TO ANY COMPONENT THAT NEEDS IT
     return { store, storeReducer };

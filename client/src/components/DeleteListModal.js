@@ -4,11 +4,24 @@ import { GlobalStoreContext } from "../store";
 
 function DeleteListModal() {
   const { store } = useContext(GlobalStoreContext);
+  let name = "";
+  if (store.currentList) {
+    name = store.currentList.name;
+  }
+  store.history = useHistory();
+
+   
+   //let markeDeletion = store.listMarkedForDeletion;
+   //let id = store.markListDeleteId;
+   //let name = "";
+   //if (markeDeletion) {
+   //  name = markeDeletion.name;
+   
   //let name = "";
   //if (store.currentList) {
   //  name = store.getPlaylistNameById(store.selectedListId);
   //}
-  store.history = useHistory();
+  
 
   function handleDeleteList(event) {
     event.stopPropagation();
@@ -25,7 +38,7 @@ function DeleteListModal() {
         <div class="modal-north">Delete playlist?</div>
         <div class="modal-center">
           <div class="modal-center-content">
-            Are you sure you wish to permanently delete the playlist?
+            Are you sure you wish to permanently delete the <span> {name} </span> playlist?
           </div>
         </div>
         <div class="modal-south">
