@@ -19,10 +19,9 @@ export const GlobalStoreActionType = {
   SET_CURRENT_LIST: "SET_CURRENT_LIST",
   SET_LIST_NAME_EDIT_ACTIVE: "SET_LIST_NAME_EDIT_ACTIVE",
   MARK_LIST_FOR_DELETION: "MARK_LIST_FOR_DELETION",
-  MARK_SONG_FOR_DELETION: "MARK_SONG_FOR_DELETION",
   DELETE_MARKED_LIST: "DELETE_MARKED_LIST",
-  MARK_SONG_FOR_EDIT: "MARK_SONG_FOR_EDIT",
-  UPDATE_CURRENT_LIST: "UPDATE_CURRENT_LIST",
+  ADD_SONG_UPDATE_LIST: "ADD_SONG_UPDATE_LIST",
+  ANNOTATE_SONG_FOR_DELETION: "ANNOTATE_SONG_FOR_DELETION",
 };
 
 // WE'LL NEED THIS TO PROCESS TRANSACTIONS
@@ -39,6 +38,7 @@ export const useGlobalStore = () => {
       listNameActive: false,
       listMarkedForDeletion: null,
       songMarkedForDeletion: null,
+      indexSongDelete: 0,
     });
 
     // HERE'S THE DATA STORE'S REDUCER, IT MUST
@@ -184,24 +184,24 @@ export const useGlobalStore = () => {
             });
           }
 
-          case GlobalStoreActionType.MARK_SONG_FOR_DELETION: {
-            return setStore({
-              idNamePairs: store.idNamePairs,
-              currentList: store.currentList,
-              newListCounter: store.newListCounter,
-              listNameActive: false,
-              listMarkedForDeletion: null,
-              songMarkedForDeletion: payload,
-            });
-          }
-
-          case GlobalStoreActionType.UPDATE_CURRENT_LIST: {
+          case GlobalStoreActionType.ADD_SONG_UPDATE_LIST: {
             return setStore({
               idNamePairs: store.idNamePairs,
               currentList: payload,
               newListCounter: store.newListCounter,
               listNameActive: false,
               listMarkedForDeletion: null,
+            });
+          }
+
+          case GlobalStoreActionType.ANNOTATE_SONG_FOR_DELETION: {
+            return setStore({
+              idNamePairs: store.idNamePairs,
+              currentList: store.currentList,
+              newListCounter: store.newListCounter,
+              listNameActive: false,
+              listKeyPairMarkedForDeletion: null,
+              indexSongDelete: payload,
             });
           }
 
@@ -424,94 +424,83 @@ export const useGlobalStore = () => {
        asyncAddNewSong();
      };*/
 
+
+    //FUNCTION TO ADD SONG
      store.addSong = () => {
-       let current_list = store.currentList;
-       let newSong = {
+       let cl = store.currentList;
+       let addSong = {
          title: "untitled",
          artist: "unknown",
          youTubeId: "dQw4w9WgXcQ",
        };
-       current_list.songs.push(newSong);
-       console.log(current_list);
-
-       store.update_current_list(current_list);
+       cl.songs.push(addSong);
+       store.update_current_list(cl);
      };
+
+
      //This function is to update current list
-      store.update_current_list = async (playlist) => {
-         const response = await api.updatePlaylistById(playlist._id, playlist);
-         console.log(response);
-         if (response.data.success) {
+      store.update_current_list = async (list) => {
+         const r = await api.updatePlaylistById(list._id, list);
+         if (r.data.success) {
              storeReducer({
-                 type: GlobalStoreActionType.UPDATE_CURRENT_LIST,
-                 payload: playlist
-             })
+               type: GlobalStoreActionType.ADD_SONG_UPDATE_LIST,
+               payload: list,
+             });
          }        
      }
 
+    //FUNCTION FOR DRAG AND DROP SONG
+     store.dragAndDropSong = (first, last) => {
+       let playlist = store.currentList;
 
-     store.moveSong = (start, end) => {
-       let list = store.currentList;
+        if (first > last) {
+          let arr = playlist.songs[first];
+          for (let i = first; i > last; i--) {
+            playlist.songs[i] = playlist.songs[i - 1];
+          }
+          playlist.songs[last] = arr;
+        }
 
-       if (start < end) {
-         let temp = list.songs[start];
-         for (let i = start; i < end; i++) {
-           list.songs[i] = list.songs[i + 1];
+        else if (first < last) {
+         let arr = playlist.songs[first];
+         for (let i = first; i < last; i++) {
+           playlist.songs[i] = playlist.songs[i + 1];
          }
-         list.songs[end] = temp;
-       } else if (start > end) {
-         let temp = list.songs[start];
-         for (let i = start; i > end; i--) {
-           list.songs[i] = list.songs[i - 1];
-         }
-         list.songs[end] = temp;
-       }
-
-       store.update_current_list(list);
+         playlist.songs[last] = arr;
+       } 
+       
+       store.update_current_list(playlist);
      };
 
 
-     store.markSongForDeletion = function (songId) {
+
+    //Functions for DELETE SONG
+
+    store.annotateSongDelete = (i) => {
        storeReducer({
-         type: GlobalStoreActionType.MARK_SONG_FOR_DELETION,
-         payload: songId,
+         type: GlobalStoreActionType.ANNOTATE_SONG_FOR_DELETION,
+         payload: i,
        });
-       store.showDeleteSongModal();
      };
-     store.deleteMarkedSong = function () {
-       store.deleteSong(store.songMarkedForDeletion);
+
+     store.deleteSong = (i) => {
+       let x = store.currentList;
+       if (x != null) {
+           x.songs.splice(i, 1);
+       }
+       store.update_current_list(x);
        store.hideDeleteSongModal();
      };
-     store.showDeleteSongModal = function () {
-       let modal = document.getElementById("remove-song-modal");
+
+     store.showDeleteSongModal = () => {
+       let modal = document.getElementById("delete-song-modal");
        modal.classList.add("is-visible");
      };
-     store.hideDeleteSongModal = function () {
-       let modal = document.getElementById("remove-song-modal");
+
+     store.hideDeleteSongModal = () => {
+       let modal = document.getElementById("delete-song-modal");
        modal.classList.remove("is-visible");
      };
-     store.deleteSong = function (songId) {
-       let playlist = store.currentList;
-       const name = playlist.name;
-       const id = playlist._id;
-       let newSongs = [];
-       for (let k = 0; k < songId; k++) {
-         newSongs.push(playlist.songs[k]);
-       }
-       for (let k = songId + 1; k < playlist.songs.length; k++) {
-         newSongs.push(playlist.songs[k]);
-       }
-       store.updateCurrentList(id, {
-         name,
-         songs: newSongs,
-       });
-     };
-
-
-
-
- 
-
-
 
 
     // THIS GIVES OUR STORE AND ITS REDUCER TO ANY COMPONENT THAT NEEDS IT

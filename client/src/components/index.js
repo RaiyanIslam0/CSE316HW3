@@ -5,7 +5,6 @@ import ListSelector from './ListSelector'
 import SongCard from './SongCard'
 import Statusbar from './Statusbar'
 import PlaylistCards from './PlaylistCards'
-import DeleteSongModal from "./DeleteSongModal";
 
 
 /*
@@ -22,5 +21,4 @@ export {
   SongCard,
   Statusbar,
   PlaylistCards,
-  DeleteSongModal,
 };

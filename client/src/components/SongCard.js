@@ -32,19 +32,20 @@ function SongCard(props) {
 
   function handleDrop(event) {
     event.preventDefault();
-
     let target = event.target;
     let targetId = target.id;
     targetId = targetId.substring(target.id.indexOf("-") + 1);
     let sourceId = event.dataTransfer.getData("song");
     sourceId = sourceId.substring(sourceId.indexOf("-") + 1);
-
     setIsDragging(false);
     setDraggedTo(false);
+    store.dragAndDropSong(parseInt(sourceId), parseInt(targetId));
+  }
 
-    // ASK THE MODEL TO MOVE THE DATA
-    // this.props.moveCallback(sourceId, targetId);
-    store.moveSong(parseInt(sourceId), parseInt(targetId));
+  function handleDeleteSong(event) {
+    event.stopPropagation();
+    store.annotateSongDelete(index);
+    store.showDeleteSongModal();
   }
 
   const { song, index } = props;
@@ -71,9 +72,10 @@ function SongCard(props) {
       </a>
       <input
         type="button"
-        id={"remove-song-" + index}
+        id={"delete-song-" + index}
         className="list-card-button"
         value={"\u2715"}
+        onClick={handleDeleteSong}
       />
     </div>
   );
