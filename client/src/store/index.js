@@ -2,6 +2,8 @@ import { createContext, useState } from 'react'
 import jsTPS from '../common/jsTPS'
 import api from '../api'
 import AddSong_Transaction from "../common/AddSong_Transaction";
+import MoveSong_Transaction from "../common/MoveSong_Transaction";
+import DeleteSong_Transaction from "../common/DeleteSong_Transaction";
 export const GlobalStoreContext = createContext({});
 
 /*
@@ -374,10 +376,10 @@ export const useGlobalStore = () => {
         }
         asyncCreatePlaylist();
     };
-
-     store.deleteSong = (idx) => {
+/*
+     store.deleteSong = (index) => {
        const list = store.currentList;
-       list.songs.splice(idx, 1);
+       list.songs.splice(index, 1);
        async function asyncUpdatePlaylist(playlist) {
          let response = await api.updatePlaylistById(playlist._id, playlist);
          if (response.data.success) {
@@ -508,6 +510,16 @@ export const useGlobalStore = () => {
 
      store.addAddSongTransaction = () => {
        let transaction = new AddSong_Transaction(store);
+       tps.addTransaction(transaction);
+     };
+
+     store.addMoveSongTransaction = (start, end) => {
+       let transaction = new MoveSong_Transaction(store, start, end);
+       tps.addTransaction(transaction);
+     };
+
+     store.addDeleteSongTransaction = (index, title, artist, id) => {
+       let transaction = new DeleteSong_Transaction(store, index, title, artist, id);
        tps.addTransaction(transaction);
      };
 

@@ -11,6 +11,8 @@ const DeleteSongModal = () => {
 
   let i = store.indexSongDelete;
   let name = i === undefined ? "" : cl.songs[i].title;
+  let artist = i === undefined ? "" : cl.songs[i].artist;
+  let yId = i === undefined ? "" : cl.songs[i].youTubeId;
 
   return (
     <div
@@ -22,12 +24,18 @@ const DeleteSongModal = () => {
         <div className="modal-north">Delete Song?</div>
         <div className="modal-center">
           <div className="modal-center-content">
-            Are you sure you wish to permanently remove {name} from the playlist?
+            Are you sure you wish to permanently remove {name} from the
+            playlist?
           </div>
         </div>
         <div className="modal-south">
-          <input type="button" id="delete-song-confirm-button" className="modal-button" onClick={() => store.deleteSong(i)} value="Confirm"
-/>
+          <input
+            type="button"
+            id="delete-song-confirm-button"
+            className="modal-button"
+            onClick={() => store.addDeleteSongTransaction(i, name, artist, yId )}
+            value="Confirm"
+          />
           <input
             type="button"
             id="delete-song-cancel-button"

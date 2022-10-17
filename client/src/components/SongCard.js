@@ -39,7 +39,8 @@ function SongCard(props) {
     sourceId = sourceId.substring(sourceId.indexOf("-") + 1);
     setIsDragging(false);
     setDraggedTo(false);
-    store.dragAndDropSong(parseInt(sourceId), parseInt(targetId));
+    //store.dragAndDropSong(parseInt(sourceId), parseInt(targetId));
+    store.addMoveSongTransaction(parseInt(sourceId), parseInt(targetId));       
   }
 
   function handleDeleteSong(event) {
