@@ -1,56 +1,86 @@
-import { useContext, useState } from "react";
-import { useHistory } from "react-router-dom";
-import { GlobalStoreContext } from "../store";
+import React, { useState, useContext } from 'react';
+ import { __RouterContext } from 'react-router';
+ import { GlobalStoreContext } from '../store';
 
-function DeleteListModal() {
-  const { store } = useContext(GlobalStoreContext);
-  store.history = useHistory();
+ const EditSongModal = () => {
+   const { store } = useContext(GlobalStoreContext);
+   const [title, setTitle] = useState('');
+   const [artist, setArtist] = useState('');
+   const [youTubeId, setYouTubeId] = useState('');
 
-  function handleDeleteList(event) {
-    event.stopPropagation();
-    store.deleteMarkedList();
-  }
+   // THIS FUNCTION IS FOR HIDING THE MODAL
+   const hideEditSongModal = () => {
+     let modal = document.getElementById('edit-song-modal');
+     modal.classList.remove('is-visible');
+     let editedSong = { title: title, artist: artist, youTubeId: youTubeId };
+     store.editSong(editedSong);
+   };
+   const handleEditSong = () => {
+     setTitle('');
+     setArtist('');
+     setYouTubeId('');
+     hideEditSongModal();
+   };
+   return (
+     <div class='modal' id='edit-song-modal' data-animation='slideInOutLeft'>
+       <div class='modal-root' id='verify-edit-song-root'>
+         <div class='modal-north'>Edit Song</div>
+         <div class='modal-center'>
+           <div class='modal-center-content'>
+             <div class='edit-song-modal-row'>
+               <span class='modal-label'>Title:</span>
+               <input
+                 type='text'
+                 id='edit-song-title-form'
+                 class='modal-form'
+                 value={title}
+                 placeholder=''
+                 onChange={(event) => setTitle(event.target.value)}
+               />
+             </div>
+             <div class='edit-song-modal-row'>
+               <span class='modal-label'>Artist:</span>
+               <input
+                 type='text'
+                 id='edit-song-artist-form'
+                 class='modal-form'
+                 value={artist}
+                 placeholder=''
+                 onChange={(event) => setArtist(event.target.value)}
+               />
+             </div>
+             <div class='edit-song-modal-row'>
+               <span class='modal-label'>YouTubeId:</span>
+               <input
+                 type='text'
+                 id='edit-song-youTubeId-form'
+                 class='modal-form'
+                 value={youTubeId}
+                 placeholder=''
+                 onChange={(event) => setYouTubeId(event.target.value)}
+               />
+             </div>
+           </div>
+         </div>
+         <div class='modal-south'>
+           <input
+             type='button'
+             id='edit-song-confirm-button'
+             class='modal-button'
+             value='Confirm'
+             onClick={handleEditSong}
+           />
+           <input
+             type='button'
+             id='edit-song-cancel-button'
+             class='modal-button'
+             value='Cancel'
+             onClick={hideEditSongModal}
+           />
+         </div>
+       </div>
+     </div>
+   );
+ };
 
-  function closeDeleteListModal() {
-    store.closeDeleteListModal();
-  }
-
-  return (
-    <div class="modal" id="edit-song-modal" data-animation="slideInOutLeft">
-      <div class="modal-root" id="verify-edit-song-root">
-        <div class="modal-north">Edit playlist</div>
-        <div class="modal-center">
-          <div class="modal-center-content">
-             <label class="preText">Title: </label>
-              <input type="text" id="titleBox" class="textBox" onClick={this.select}/>
-              <br />
-              <label class="preText">Artist: </label>
-              <input type="text" id="artistBox" class="textBox" onClick={this.select}/>
-              <br />
-              <label class="preText">YouTube ID:</label>
-              <input type="text" id="youtubeBox" class="textBox" onClick={this.select} />
-              <br/>
-          </div>
-        </div>
-        <div class="modal-south">
-          <input
-            type="button"
-            id="edit-song-confirm-button"
-            class="modal-button"
-            onClick={handleDeleteList}
-            value="Confirm"
-          />
-          <input
-            type="button"
-            id="edit-song-cancel-button"
-            class="modal-button"
-            onClick={closeDeleteListModal}
-            value="Cancel"
-          />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export default DeleteListModal;
+ export default EditSongModal;

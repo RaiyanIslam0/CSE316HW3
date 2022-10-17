@@ -97,7 +97,7 @@ getPlaylistPairs = async (req, res) => {
         }
     }).catch(err => console.log(err))
 }
-
+/*
 updatePlaylistById = async (req, res) => {
   const body = req.body;
   console.log("createPlaylist body: " + body);
@@ -115,7 +115,21 @@ updatePlaylistById = async (req, res) => {
 
     return res.status(200).json({ success: true, playlist: list });
   }).catch((err) => console.log(err));
+};*/
+
+updatePlaylistById = async (req, response) => {
+  const body = req.body;
+  const id = req.params.id;
+  console.log(body, id);
+  await Playlist.updateOne({ _id: id }, body, (error, res) => {
+    if (error) {
+      return response.status(400).json({ success: false, error: error });
+    }
+    console.log("update success");
+    return response.status(200).json({ success: true, ...res });
+  }).catch((err) => console.log(err));
 };
+
 
 
 

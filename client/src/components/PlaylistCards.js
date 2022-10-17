@@ -13,6 +13,7 @@ function PlaylistCards() {
     store.history = useHistory();
 
     return (
+
         <div id="playlist-cards">
         {
             store.currentList.songs.map((song, index) => (
@@ -25,6 +26,7 @@ function PlaylistCards() {
             ))
         }
         </div>
+
     )
 }
 
