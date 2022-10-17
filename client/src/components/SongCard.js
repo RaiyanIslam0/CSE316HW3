@@ -2,111 +2,81 @@ import React, { useContext, useState } from 'react'
 import { GlobalStoreContext } from '../store'
 
 function SongCard(props) {
-    const { store } = useContext(GlobalStoreContext);
+  const { store } = useContext(GlobalStoreContext);
+  const [isDragging, setIsDragging] = useState(false);
+  const [draggedTo, setDraggedTo] = useState(false);
 
-    function handleDragStart(event) {
-      event.dataTransfer.setData("song", index);
-    }
+  function handleDragStart(event) {
+    event.dataTransfer.setData("song", event.target.id);
+    setIsDragging(true);
+    setDraggedTo(draggedTo);
+  }
 
-    function handleDragOver(event) {
-      event.preventDefault();
-    }
+  function handleDragOver(event) {
+    event.preventDefault();
+    setIsDragging(isDragging);
+    setDraggedTo(true);
+  }
 
-    function handleDragEnter(event) {
-      event.preventDefault();
-    }
+  function handleDragEnter(event) {
+    event.preventDefault();
+    setIsDragging(isDragging);
+    setDraggedTo(true);
+  }
 
-    function handleDragLeave(event) {
-      event.preventDefault();
-    }
+  function handleDragLeave(event) {
+    event.preventDefault();
+    setIsDragging(isDragging);
+    setDraggedTo(false);
+  }
 
-    function handleDrop(event) {
-      event.preventDefault();
-      let targetIndex = index;
-      let sourceIndex = Number(event.dataTransfer.getData("song"));
+  function handleDrop(event) {
+    event.preventDefault();
 
-      // ASK THE MODEL TO MOVE THE DATA
-      store.moveSong(sourceIndex, targetIndex);
-    }
+    let target = event.target;
+    let targetId = target.id;
+    targetId = targetId.substring(target.id.indexOf("-") + 1);
+    let sourceId = event.dataTransfer.getData("song");
+    sourceId = sourceId.substring(sourceId.indexOf("-") + 1);
 
-    const handleEditSong = (event) => {
-      event.preventDefault();
-      // THIS FUNCTION SHOWS THE MODAL FOR PROMPTING THE USER
-      // TO SEE IF THEY REALLY WANT TO EDIT THE SONG
-      const showEditSongModal = () => {
-        let modal = document.getElementById("edit-song-modal");
-        modal.classList.add("is-visible");
-      };
-      store.selectSong(index);
-      showEditSongModal();
-    };
+    setIsDragging(false);
+    setDraggedTo(false);
 
-    async function handleRemove(event) {
-      event.stopPropagation();
-      let _id = event.target.id;
-      _id = ("" + _id).substring("remove-song-".length);
-      store.markSongForDeletion(_id);
-    }
+    // ASK THE MODEL TO MOVE THE DATA
+    // this.props.moveCallback(sourceId, targetId);
+    store.moveSong(parseInt(sourceId), parseInt(targetId));
+  }
 
-
-
-
-
-    const { song, index } = props;
-    let cardClass = "list-card unselected-list-card";
-
-    if (store.songMarkedForDeletion !== null) {
-      return (
-        <div key={index} id={"song-" + index + "-card"} className={cardClass}>
-          {index + 1}.
-          <a
-            id={"song-" + index + "-link"}
-            className="song-link"
-            href={"https://www.youtube.com/watch?v=" + song.youTubeId}
-          >
-            {song.title} by {song.artist}
-          </a>
-          <input
-            type="button"
-            id={"remove-song-" + index}
-            className="list-card-button"
-            onClick={handleRemove}
-            value={"\u2715"}
-          />
-        </div>
-      );
-    }
-    
-    return (
-      <div
-        key={index}
-        id={"song-" + index + "-card"}
-        className={cardClass}
-        onDragStart={handleDragStart}
-        onDragOver={handleDragOver}
-        onDragEnter={handleDragEnter}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}
-        onDoubleClick={handleEditSong}
-        onClick={handleRemove}
-        draggable="true"
+  const { song, index } = props;
+  let cardClass = "list-card unselected-list-card";
+  return (
+    <div
+      key={index}
+      id={"song-" + index} //+ "-card"}
+      className={cardClass}
+      onDragStart={handleDragStart}
+      onDragOver={handleDragOver}
+      onDragEnter={handleDragEnter}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+      draggable="true"
+    >
+      {index + 1}.
+      <a
+        id={"song-" + index + "-link"}
+        className="song-link"
+        href={"https://www.youtube.com/watch?v=" + song.youTubeId}
       >
-        {index + 1}.
-        <a
-          id={"song-" + index + "-link"}
-          className="song-link"
-          href={"https://www.youtube.com/watch?v=" + song.youTubeId}
-        >
-          {song.title} by {song.artist}
-        </a>
-        <input
-          type="button"
-          id={"remove-song-" + index}
-          className="list-card-button"
-          value={"\u2715"}
-        />
-      </div>
-    );
+        {song.title} by {song.artist}
+      </a>
+      <input
+        type="button"
+        id={"remove-song-" + index}
+        className="list-card-button"
+        value={"\u2715"}
+      />
+    </div>
+  );
 }
 
 export default SongCard;

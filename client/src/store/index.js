@@ -22,6 +22,7 @@ export const GlobalStoreActionType = {
   MARK_SONG_FOR_DELETION: "MARK_SONG_FOR_DELETION",
   DELETE_MARKED_LIST: "DELETE_MARKED_LIST",
   MARK_SONG_FOR_EDIT: "MARK_SONG_FOR_EDIT",
+  UPDATE_CURRENT_LIST: "UPDATE_CURRENT_LIST",
 };
 
 // WE'LL NEED THIS TO PROCESS TRANSACTIONS
@@ -37,8 +38,6 @@ export const useGlobalStore = () => {
       newListCounter: 0,
       listNameActive: false,
       listMarkedForDeletion: null,
-      songIndexMarkedForEdit: null,
-      editListNameActive: false,
       songMarkedForDeletion: null,
     });
 
@@ -193,6 +192,16 @@ export const useGlobalStore = () => {
               listNameActive: false,
               listMarkedForDeletion: null,
               songMarkedForDeletion: payload,
+            });
+          }
+
+          case GlobalStoreActionType.UPDATE_CURRENT_LIST: {
+            return setStore({
+              idNamePairs: store.idNamePairs,
+              currentList: payload,
+              newListCounter: store.newListCounter,
+              listNameActive: false,
+              listMarkedForDeletion: null,
             });
           }
 
@@ -415,54 +424,34 @@ export const useGlobalStore = () => {
        asyncAddNewSong();
      };*/
 
-     store.addSong = function (initLocation) {
-       let song = {
-         title: "Untitled",
-         artist: "Unknown",
+     store.addSong = () => {
+       let current_list = store.currentList;
+       let newSong = {
+         title: "untitled",
+         artist: "unknown",
          youTubeId: "dQw4w9WgXcQ",
        };
-       // store.currentList.songs.splice(initLocation, 0, song);
-       // store.updateCurrentList();
-       let playlist = store.currentList;
-       const name = playlist.name;
-       const id = playlist._id;
-       let newSongs = [];
-       for (let i = 0; i < initLocation; i++) {
-         newSongs.push(playlist.songs[i]);
-       }
-       newSongs.push(song);
-       for (let i = initLocation; i < playlist.songs.length; i++) {
-         newSongs.push(playlist.songs[i]);
-       }
-       store.updateCurrentList(id, {
-         name,
-         songs: newSongs,
-       });
-     };
-     store.updateCurrentList = function (id, playlist) {
-       (async () => {
-         try {
-           let res = await api.updatePlaylistById(id, playlist);
-           if (res.data.success) {
-             res = await api.getPlaylistById(id);
-             if (res.data.success) {
-               const playlist = res.data.playlist;
-               storeReducer({
-                 type: GlobalStoreActionType.SET_CURRENT_LIST,
-                 payload: playlist,
-               });
-             }
-           }
-         } catch (e) {
-           console.error(e);
-         }
-       })();
-     };
+       current_list.songs.push(newSong);
+       console.log(current_list);
 
-     store.moveSong = function (start, end) {
+       store.update_current_list(current_list);
+     };
+     //This function is to update current list
+      store.update_current_list = async (playlist) => {
+         const response = await api.updatePlaylistById(playlist._id, playlist);
+         console.log(response);
+         if (response.data.success) {
+             storeReducer({
+                 type: GlobalStoreActionType.UPDATE_CURRENT_LIST,
+                 payload: playlist
+             })
+         }        
+     }
+
+
+     store.moveSong = (start, end) => {
        let list = store.currentList;
 
-       // WE NEED TO UPDATE THE STATE FOR THE APP
        if (start < end) {
          let temp = list.songs[start];
          for (let i = start; i < end; i++) {
@@ -476,20 +465,47 @@ export const useGlobalStore = () => {
          }
          list.songs[end] = temp;
        }
-       async function updateList(list) {
-         let response = await api.updatePlaylistById(list._id, list);
-         list = response.data.playlist;
-         if (response.data.success) {
-           storeReducer({
-             type: GlobalStoreActionType.DRAG_LIST,
-             payload: {
-               playlist: list,
-             },
-           });
-         }
-       }
-       updateList(list);
+
+       store.update_current_list(list);
      };
+
+
+     store.markSongForDeletion = function (songId) {
+       storeReducer({
+         type: GlobalStoreActionType.MARK_SONG_FOR_DELETION,
+         payload: songId,
+       });
+       store.showDeleteSongModal();
+     };
+     store.deleteMarkedSong = function () {
+       store.deleteSong(store.songMarkedForDeletion);
+       store.hideDeleteSongModal();
+     };
+     store.showDeleteSongModal = function () {
+       let modal = document.getElementById("remove-song-modal");
+       modal.classList.add("is-visible");
+     };
+     store.hideDeleteSongModal = function () {
+       let modal = document.getElementById("remove-song-modal");
+       modal.classList.remove("is-visible");
+     };
+     store.deleteSong = function (songId) {
+       let playlist = store.currentList;
+       const name = playlist.name;
+       const id = playlist._id;
+       let newSongs = [];
+       for (let k = 0; k < songId; k++) {
+         newSongs.push(playlist.songs[k]);
+       }
+       for (let k = songId + 1; k < playlist.songs.length; k++) {
+         newSongs.push(playlist.songs[k]);
+       }
+       store.updateCurrentList(id, {
+         name,
+         songs: newSongs,
+       });
+     };
+
 
 
 
