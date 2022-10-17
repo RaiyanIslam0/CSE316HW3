@@ -1,86 +1,76 @@
-import React, { useState, useContext } from 'react';
- import { __RouterContext } from 'react-router';
- import { GlobalStoreContext } from '../store';
+import React, { useContext } from "react";
+import { GlobalStoreContext } from "../store";
 
- const EditSongModal = () => {
-   const { store } = useContext(GlobalStoreContext);
-   const [title, setTitle] = useState('');
-   const [artist, setArtist] = useState('');
-   const [youTubeId, setYouTubeId] = useState('');
+const EditSongModal = () => {
+  const { store } = useContext(GlobalStoreContext);
+  const { songKeyMarked: index, tempSong } = store;
 
-   // THIS FUNCTION IS FOR HIDING THE MODAL
-   const hideEditSongModal = () => {
-     let modal = document.getElementById('edit-song-modal');
-     modal.classList.remove('is-visible');
-     let editedSong = { title: title, artist: artist, youTubeId: youTubeId };
-     store.editSong(editedSong);
-   };
-   const handleEditSong = () => {
-     setTitle('');
-     setArtist('');
-     setYouTubeId('');
-     hideEditSongModal();
-   };
-   return (
-     <div class='modal' id='edit-song-modal' data-animation='slideInOutLeft'>
-       <div class='modal-root' id='verify-edit-song-root'>
-         <div class='modal-north'>Edit Song</div>
-         <div class='modal-center'>
-           <div class='modal-center-content'>
-             <div class='edit-song-modal-row'>
-               <span class='modal-label'>Title:</span>
-               <input
-                 type='text'
-                 id='edit-song-title-form'
-                 class='modal-form'
-                 value={title}
-                 placeholder=''
-                 onChange={(event) => setTitle(event.target.value)}
-               />
-             </div>
-             <div class='edit-song-modal-row'>
-               <span class='modal-label'>Artist:</span>
-               <input
-                 type='text'
-                 id='edit-song-artist-form'
-                 class='modal-form'
-                 value={artist}
-                 placeholder=''
-                 onChange={(event) => setArtist(event.target.value)}
-               />
-             </div>
-             <div class='edit-song-modal-row'>
-               <span class='modal-label'>YouTubeId:</span>
-               <input
-                 type='text'
-                 id='edit-song-youTubeId-form'
-                 class='modal-form'
-                 value={youTubeId}
-                 placeholder=''
-                 onChange={(event) => setYouTubeId(event.target.value)}
-               />
-             </div>
-           </div>
-         </div>
-         <div class='modal-south'>
-           <input
-             type='button'
-             id='edit-song-confirm-button'
-             class='modal-button'
-             value='Confirm'
-             onClick={handleEditSong}
-           />
-           <input
-             type='button'
-             id='edit-song-cancel-button'
-             class='modal-button'
-             value='Cancel'
-             onClick={hideEditSongModal}
-           />
-         </div>
-       </div>
-     </div>
-   );
- };
+  let currentList = store.currentList;
+  if (!currentList) return null;
 
- export default EditSongModal;
+  return (
+    <div className="modal" id="edit-song-modal" data-animation="slideInOutLeft">
+      <div className="modal-root" id="verify-edit-song-root">
+        <div className="modal-north">Edit Song?</div>
+        <div className="modal-center">
+          <div className="modal-center-content">
+            <div className="edit-song-content">
+              Title:{" "}
+              <span id="edit-title-span">
+                <input
+                  type="text"
+                  name="title"
+                  id={"song-card-title-input"}
+                  value={tempSong === undefined ? "" : tempSong.title}
+                  onChange={store.handleSongChange}
+                />
+              </span>
+            </div>
+            <div className="edit-song-content">
+              Artist:{" "}
+              <span id="edit-artist-span">
+                <input
+                  type="text"
+                  name="artist"
+                  id={"song-card-artist-input"}
+                  value={tempSong === undefined ? "" : tempSong.artist}
+                  onChange={store.handleSongChange}
+                />
+              </span>
+            </div>
+            <div className="edit-song-content">
+              youTubeId:{" "}
+              <span id="edit-ID-span">
+                <input
+                  type="text"
+                  name="youTubeId"
+                  id={"song-card-title-input"}
+                  value={tempSong === undefined ? "" : tempSong.youTubeId}
+                  onChange={store.handleSongChange}
+                />
+              </span>
+            </div>
+          </div>
+        </div>
+        <div className="modal-south">
+          <input
+            type="button"
+            id="edit-song-confirm-button"
+            className="modal-button"
+            onClick={() => store.editSong(index, tempSong)}
+            value="Confirm"
+          />
+          <input
+            type="button"
+            id="edit-song-cancel-button"
+            className="modal-button"
+            onClick={store.hideEditSongModal}
+            value="Cancel"
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default EditSongModal;

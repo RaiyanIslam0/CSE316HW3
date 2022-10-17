@@ -1,7 +1,9 @@
 import { createContext, useState } from 'react'
 import jsTPS from '../common/jsTPS'
 import api from '../api'
+import AddSong_Transaction from "../common/AddSong_Transaction";
 export const GlobalStoreContext = createContext({});
+
 /*
     This is our global data store. Note that it uses the Flux design pattern,
     which makes use of things like actions and reducers. 
@@ -500,6 +502,13 @@ export const useGlobalStore = () => {
      store.hideDeleteSongModal = () => {
        let modal = document.getElementById("delete-song-modal");
        modal.classList.remove("is-visible");
+     };
+
+
+
+     store.addAddSongTransaction = () => {
+       let transaction = new AddSong_Transaction(store);
+       tps.addTransaction(transaction);
      };
 
 

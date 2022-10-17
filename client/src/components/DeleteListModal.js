@@ -10,19 +10,6 @@ function DeleteListModal() {
   }
   store.history = useHistory();
 
-   
-   //let markeDeletion = store.listMarkedForDeletion;
-   //let id = store.markListDeleteId;
-   //let name = "";
-   //if (markeDeletion) {
-   //  name = markeDeletion.name;
-   
-  //let name = "";
-  //if (store.currentList) {
-  //  name = store.getPlaylistNameById(store.selectedListId);
-  //}
-  
-
   function handleDeleteList(event) {
     event.stopPropagation();
     store.deleteMarkedList();
