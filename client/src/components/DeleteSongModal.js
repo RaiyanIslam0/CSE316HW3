@@ -9,10 +9,31 @@ const DeleteSongModal = () => {
       return null;
   } 
 
-  let i = store.indexSongDelete;
-  let name = i === undefined ? "" : cl.songs[i].title;
-  let artist = i === undefined ? "" : cl.songs[i].artist;
-  let yId = i === undefined ? "" : cl.songs[i].youTubeId;
+  let index = store.indexSongDelete;
+
+  let name = index;
+  if (name===undefined){
+    name="";
+  } 
+  else {
+    name=cl.songs[index].title;
+  }
+
+  let artist=index;
+  if (artist===undefined){
+    artist="";
+  }
+  else {
+    artist = cl.songs[index].artist;
+  }
+
+  let youtube=index;
+  if (youtube===undefined){
+    youtube="";
+  }
+  else {
+    youtube = cl.songs[index].youTubeId;
+  }
 
   return (
     <div
@@ -24,8 +45,7 @@ const DeleteSongModal = () => {
         <div className="modal-north">Delete Song?</div>
         <div className="modal-center">
           <div className="modal-center-content">
-            Are you sure you wish to permanently remove {name} from the
-            playlist?
+            Are you sure you wish to permanently remove {name} from the playlist?
           </div>
         </div>
         <div className="modal-south">
@@ -33,7 +53,7 @@ const DeleteSongModal = () => {
             type="button"
             id="delete-song-confirm-button"
             className="modal-button"
-            onClick={() => store.addDeleteSongTransaction(i, name, artist, yId )}
+            onClick={() => store.addDeleteSongTransaction(index, name, artist,youtube)}
             value="Confirm"
           />
           <input

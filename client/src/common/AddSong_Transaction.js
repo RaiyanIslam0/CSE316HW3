@@ -13,6 +13,6 @@ import jsTPS_Transaction from "../common/jsTPS";
      undoTransaction() {
          let list= this.store.currentList;
          list.songs.pop();
-         this.store.update_current_list(list);
+         this.store.updateCurrentList(list);
      }
  }

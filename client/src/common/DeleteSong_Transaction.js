@@ -23,7 +23,7 @@ export default class RemoveSong_Transaction extends jsTPS_Transaction {
       };
 
       list.songs.splice(this.index, 0, oldSong);
-      this.store.update_current_list(list);
+      this.store.updateCurrentList(list);
       
     };
 }
